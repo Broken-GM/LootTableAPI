@@ -1,0 +1,22 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "LootTable"
+resolve_s3 = true
+s3_prefix = "LootTable"
+region = "us-west-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_NAMED_IAM"
+disable_rollback = true
+image_repositories = []
+
+[githubAction.deploy.parameters]
+stack_name = "LootTable"
+resolve_s3 = true
+s3_prefix = "LootTable"
+region = "us-west-2"
+confirm_changeset = false
+capabilities = "CAPABILITY_NAMED_IAM"
+disable_rollback = true
+image_repositories = []

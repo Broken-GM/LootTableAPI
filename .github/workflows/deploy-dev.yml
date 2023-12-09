@@ -1,0 +1,27 @@
+name: deploy-prod
+on:
+  push:
+    branches:
+      - development
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Installing Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+      - name: Setup Sam
+        uses: aws-actions/setup-sam@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.DEV_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.DEV_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - name: Sam Build
+        run: sam build --use-container
+      - name: Sam Deploy
+        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --config-env githubAction
