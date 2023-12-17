@@ -2,7 +2,7 @@ import Lambda from "@carson.key/lambdawrapper"
 import fetch from 'node-fetch'
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { getRates, determineRarity, getItems, getItem } from './helpers.js'
+import { getRates, determineRarity, getItems, getItem, randomNumber } from './helpers.js'
 
 const run = async (lambda) => {
     const body = JSON.parse(lambda.event.body)
@@ -23,8 +23,9 @@ const run = async (lambda) => {
         randomNumberForRarity
     })
 
-    const { items, numberOfItemsInRarity, randomNumberForItem } = await getItems({ lambda, docClient, randomRarityValue })
+    const { items, numberOfItemsInRarity } = await getItems({ lambda, docClient, randomRarityValue })
 
+    const randomNumberForItem = randomNumber({ maxNumber: numberOfItemsInRarity })
     const { item } = await getItem({ lambda, docClient, randomRarityValue, randomNumberForItem })
 
     return lambda.success({ 

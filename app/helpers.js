@@ -75,10 +75,9 @@ export const getItems = async ({ lambda, randomRarityValue, docClient }) => {
 
     const items = JSON.parse(responseItems.Items[0].attributes)
     const numberOfItemsInRarity = items.numberOf[randomRarityValue]
-    const randomNumberForItem = randomNumber({ maxNumber: numberOfItemsInRarity })
-    lambda.addToLog({ name: "itemsData", body: { items, numberOfItemsInRarity, randomNumberForItem } })
+    lambda.addToLog({ name: "itemsData", body: { items, numberOfItemsInRarity } })
 
-    return { items, numberOfItemsInRarity, randomNumberForItem }
+    return { items, numberOfItemsInRarity }
 }
 
 export const getItem = async ({ lambda, docClient, randomRarityValue, randomNumberForItem }) => {
