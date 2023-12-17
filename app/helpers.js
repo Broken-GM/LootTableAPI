@@ -1,19 +1,27 @@
-import Lambda from "@carson.key/lambdawrapper"
-import fetch from 'node-fetch'
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { QueryCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { getRates, determineRarity, getItems, getItem } from './helpers.js'
+import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 
-const run = async (lambda) => {
-    const body = JSON.parse(lambda.event.body)
-    const client = new DynamoDBClient({});
-    const docClient = DynamoDBDocumentClient.from(client);
+export const getRates = async ({ lambda, docClient, cr, campaignId }) => {
+    const commandRates = new QueryCommand({
+        TableName: "loot_table",
+        KeyConditionExpression: "PK = :campaignId AND begins_with(SK, :type)",
+        ExpressionAttributeValues: {
+            ":campaignId": `campaign#${campaignId}`,
+            ":type": "rates#"
+        },
+        ConsistentRead: true,
+    });
 
-    const cr = body.cr
-    const campaignId = body.campaignId
+    const responseRates = await docClient.send(commandRates);
+    lambda.addToLog({ name: "dynamoResponseForRates", body: responseRates })
 
-    const { rates, ratesToPullFrom, arrayOfRarityRates } = await getRates({ lambda, docClient, cr, campaignId })
+    const rates = JSON.parse(responseRates.Items[0].attributes)
+    const ratesToPullFrom = rates[cr]
+    const arrayOfRarityRates = Object.keys(ratesToPullFrom)
 
+    return { rates, ratesToPullFrom, arrayOfRarityRates }
+}
+
+export const determineRarity = async ({ lambda, arrayOfRarityRates, ratesToPullFrom }) => {
     const randomNumberForScroll = Math.floor(Math.random() * 10000) + 1
     const randomNumberForRarity = Math.floor(Math.random() * 10000) + 1
     let randomRarityValue = null
@@ -27,7 +35,6 @@ const run = async (lambda) => {
         ) {
             continue
         } else if (randomNumberForRarity <= ratesToPullFrom[arrayOfRarityRates[i]]) {
-            console.log(`Checked: `)
             randomRarityValue = arrayOfRarityRates[i]
             break
         }
@@ -45,6 +52,10 @@ const run = async (lambda) => {
         randomNumberForScroll, randomNumberForRarity 
     }})
 
+    return { randomRarityValue, isScroll, ratesToPullFrom, randomNumberForScroll, randomNumberForRarity }
+}
+
+export const getItems = async ({ lambda, randomRarityValue }) => {
     const commandItems = new QueryCommand({
         TableName: "loot_table",
         KeyConditionExpression: "PK = :items",
@@ -61,6 +72,10 @@ const run = async (lambda) => {
     const randomNumberForItem = Math.floor(Math.random() * numberOfItemsInRarity) + 1
     lambda.addToLog({ name: "itemsData", body: { items, numberOfItemsInRarity, randomNumberForItem } })
 
+    return { items, numberOfItemsInRarity, randomNumberForItem }
+}
+
+export const getItem = async ({ lambda, randomRarityValue, randomNumberForItem }) => {
     const commandItem = new QueryCommand({
         TableName: "loot_table",
         KeyConditionExpression: "PK = :rarity AND SK = :id",
@@ -76,16 +91,5 @@ const run = async (lambda) => {
     const item = JSON.parse(responseItem.Items[0].attributes)
     lambda.addToLog({ name: "itemData", body: { item } })
 
-    return lambda.success({ 
-        body: item, 
-        message: "Success" 
-    })
+    return { item }
 }
-
-export const lambdaHandler = async (event, context) => {
-    const lambdaObject = new Lambda({ event, context, run })
-
-    await lambdaObject.main()
-
-    return lambdaObject.response
-};
