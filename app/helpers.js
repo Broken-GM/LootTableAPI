@@ -75,7 +75,7 @@ export const getItems = async ({ lambda, randomRarityValue, docClient }) => {
     return { items, numberOfItemsInRarity, randomNumberForItem }
 }
 
-export const getItem = async ({ lambda, randomRarityValue, randomNumberForItem }) => {
+export const getItem = async ({ lambda, docClient, randomRarityValue, randomNumberForItem }) => {
     const commandItem = new QueryCommand({
         TableName: "loot_table",
         KeyConditionExpression: "PK = :rarity AND SK = :id",
