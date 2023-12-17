@@ -1,5 +1,9 @@
 import { QueryCommand } from "@aws-sdk/lib-dynamodb";
 
+export const randomNumber = ({ maxNumber }) => {
+    return Math.floor(Math.random() * maxNumber) + 1
+}
+
 export const getRates = async ({ lambda, docClient, cr, campaignId }) => {
     const commandRates = new QueryCommand({
         TableName: "loot_table",
@@ -22,8 +26,8 @@ export const getRates = async ({ lambda, docClient, cr, campaignId }) => {
 }
 
 export const determineRarity = async ({ lambda, arrayOfRarityRates, ratesToPullFrom }) => {
-    const randomNumberForScroll = Math.floor(Math.random() * 10000) + 1
-    const randomNumberForRarity = Math.floor(Math.random() * 10000) + 1
+    const randomNumberForScroll = randomNumber({ maxNumber: 10000 })
+    const randomNumberForRarity = randomNumber({ maxNumber: 10000 })
     let randomRarityValue = null
     let isScroll = null
 
@@ -69,7 +73,7 @@ export const getItems = async ({ lambda, randomRarityValue, docClient }) => {
 
     const items = JSON.parse(responseItems.Items[0].attributes)
     const numberOfItemsInRarity = items.numberOf[randomRarityValue]
-    const randomNumberForItem = Math.floor(Math.random() * numberOfItemsInRarity) + 1
+    const randomNumberForItem = randomNumber({ maxNumber: numberOfItemsInRarity })
     lambda.addToLog({ name: "itemsData", body: { items, numberOfItemsInRarity, randomNumberForItem } })
 
     return { items, numberOfItemsInRarity, randomNumberForItem }
