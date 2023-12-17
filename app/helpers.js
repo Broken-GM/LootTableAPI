@@ -55,7 +55,7 @@ export const determineRarity = async ({ lambda, arrayOfRarityRates, ratesToPullF
     return { randomRarityValue, isScroll, randomNumberForScroll, randomNumberForRarity }
 }
 
-export const getItems = async ({ lambda, randomRarityValue }) => {
+export const getItems = async ({ lambda, randomRarityValue, docClient }) => {
     const commandItems = new QueryCommand({
         TableName: "loot_table",
         KeyConditionExpression: "PK = :items",

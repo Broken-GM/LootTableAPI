@@ -19,21 +19,7 @@ const run = async (lambda) => {
         randomNumberForScroll, randomNumberForRarity 
     } = await determineRarity({ lambda, arrayOfRarityRates, ratesToPullFrom })
 
-    const commandItems = new QueryCommand({
-        TableName: "loot_table",
-        KeyConditionExpression: "PK = :items",
-        ExpressionAttributeValues: {
-            ":items": `items`
-        },
-        ConsistentRead: true,
-    });
-    const responseItems = await docClient.send(commandItems);
-    lambda.addToLog({ name: "dynamoResponseForItems", body: responseItems })
-
-    const items = JSON.parse(responseItems.Items[0].attributes)
-    const numberOfItemsInRarity = items.numberOf[randomRarityValue]
-    const randomNumberForItem = Math.floor(Math.random() * numberOfItemsInRarity) + 1
-    lambda.addToLog({ name: "itemsData", body: { items, numberOfItemsInRarity, randomNumberForItem } })
+    const { items, numberOfItemsInRarity, randomNumberForItem } = await getItems({ lambda, docClient, randomRarityValue })
 
     const commandItem = new QueryCommand({
         TableName: "loot_table",
