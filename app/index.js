@@ -12,26 +12,32 @@ const run = async (lambda) => {
     const cr = body.cr
     const campaignId = body.campaignId
 
-    const { rates, ratesToPullFrom, arrayOfRarityRates } = await getRates({ lambda, docClient, cr, campaignId })
+    if (!cr) {
+        return lambda.badRequestError({ body: {}, message: "Payload body requires cr" })
+    } else if (!campaignId) {
+        return lambda.badRequestError({ body: {}, message: "Payload body requires campaignId" })
+    } else {
+        const { rates, ratesToPullFrom, arrayOfRarityRates } = await getRates({ lambda, docClient, cr, campaignId })
 
-    const randomNumberForScroll = randomNumber({ maxNumber: 10000 })
-    const randomNumberForRarity = randomNumber({ maxNumber: 10000 })
+        const randomNumberForScroll = randomNumber({ maxNumber: 10000 })
+        const randomNumberForRarity = randomNumber({ maxNumber: 10000 })
 
-    const { randomRarityValue, isScroll } = await determineRarity({ 
-        lambda, arrayOfRarityRates, 
-        ratesToPullFrom, randomNumberForScroll, 
-        randomNumberForRarity
-    })
+        const { randomRarityValue, isScroll } = await determineRarity({ 
+            lambda, arrayOfRarityRates, 
+            ratesToPullFrom, randomNumberForScroll, 
+            randomNumberForRarity
+        })
 
-    const { items, numberOfItemsInRarity } = await getItems({ lambda, docClient, randomRarityValue })
+        const { items, numberOfItemsInRarity } = await getItems({ lambda, docClient, randomRarityValue })
 
-    const randomNumberForItem = randomNumber({ maxNumber: numberOfItemsInRarity })
-    const { item } = await getItem({ lambda, docClient, randomRarityValue, randomNumberForItem })
+        const randomNumberForItem = randomNumber({ maxNumber: numberOfItemsInRarity })
+        const { item } = await getItem({ lambda, docClient, randomRarityValue, randomNumberForItem })
 
-    return lambda.success({ 
-        body: item, 
-        message: "Success" 
-    })
+        return lambda.success({ 
+            body: item, 
+            message: "Success" 
+        })
+    }
 }
 
 export const lambdaHandler = async (event, context) => {
