@@ -14,10 +14,14 @@ const run = async (lambda) => {
 
     const { rates, ratesToPullFrom, arrayOfRarityRates } = await getRates({ lambda, docClient, cr, campaignId })
 
-    const { 
-        randomRarityValue, isScroll,
-        randomNumberForScroll, randomNumberForRarity 
-    } = await determineRarity({ lambda, arrayOfRarityRates, ratesToPullFrom })
+    const randomNumberForScroll = randomNumber({ maxNumber: 10000 })
+    const randomNumberForRarity = randomNumber({ maxNumber: 10000 })
+
+    const { randomRarityValue, isScroll } = await determineRarity({ 
+        lambda, arrayOfRarityRates, 
+        ratesToPullFrom, randomNumberForScroll, 
+        randomNumberForRarity
+    })
 
     const { items, numberOfItemsInRarity, randomNumberForItem } = await getItems({ lambda, docClient, randomRarityValue })
 

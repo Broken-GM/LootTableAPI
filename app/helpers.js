@@ -25,9 +25,11 @@ export const getRates = async ({ lambda, docClient, cr, campaignId }) => {
     return { rates, ratesToPullFrom, arrayOfRarityRates }
 }
 
-export const determineRarity = async ({ lambda, arrayOfRarityRates, ratesToPullFrom }) => {
-    const randomNumberForScroll = randomNumber({ maxNumber: 10000 })
-    const randomNumberForRarity = randomNumber({ maxNumber: 10000 })
+export const determineRarity = async ({ 
+    lambda, randomNumberForScroll, 
+    randomNumberForRarity, arrayOfRarityRates, 
+    ratesToPullFrom 
+}) => {
     let randomRarityValue = null
     let isScroll = null
 
