@@ -52,7 +52,7 @@ export const determineRarity = async ({ lambda, arrayOfRarityRates, ratesToPullF
         randomNumberForScroll, randomNumberForRarity 
     }})
 
-    return { randomRarityValue, isScroll, ratesToPullFrom, randomNumberForScroll, randomNumberForRarity }
+    return { randomRarityValue, isScroll, randomNumberForScroll, randomNumberForRarity }
 }
 
 export const getItems = async ({ lambda, randomRarityValue }) => {

@@ -14,36 +14,10 @@ const run = async (lambda) => {
 
     const { rates, ratesToPullFrom, arrayOfRarityRates } = await getRates({ lambda, docClient, cr, campaignId })
 
-    const randomNumberForScroll = Math.floor(Math.random() * 10000) + 1
-    const randomNumberForRarity = Math.floor(Math.random() * 10000) + 1
-    let randomRarityValue = null
-    let isScroll = null
-
-    for (let i = 0; i < arrayOfRarityRates.length; i++) {
-        if (
-            arrayOfRarityRates[i] === "spellScrollChance" || 
-            ratesToPullFrom[arrayOfRarityRates[i]] === 0 || 
-            arrayOfRarityRates[i] === "displayName"
-        ) {
-            continue
-        } else if (randomNumberForRarity <= ratesToPullFrom[arrayOfRarityRates[i]]) {
-            console.log(`Checked: `)
-            randomRarityValue = arrayOfRarityRates[i]
-            break
-        }
-    }
-
-    if (randomNumberForScroll <= ratesToPullFrom.spellScrollChance) {
-        isScroll = true
-    } else {
-        isScroll = false
-    }
-
-    lambda.addToLog({ name: "dataFromRandomGeneration", body: { 
-        "rarity": randomRarityValue, 
-        isScroll, ratesToPullFrom,
+    const { 
+        randomRarityValue, isScroll,
         randomNumberForScroll, randomNumberForRarity 
-    }})
+    } = await determineRarity({ lambda, arrayOfRarityRates, ratesToPullFrom })
 
     const commandItems = new QueryCommand({
         TableName: "loot_table",
