@@ -8,7 +8,7 @@ const run = async (lambda) => {
     const client = new DynamoDBClient({});
     const docClient = DynamoDBDocumentClient.from(client);
 
-    const command = new QueryCommand({
+    const commandRates = new QueryCommand({
         TableName: "loot_table",
         KeyConditionExpression: "PK = :campaignId AND begins_with(SK, :type)",
         ExpressionAttributeValues: {
@@ -18,10 +18,10 @@ const run = async (lambda) => {
         ConsistentRead: true,
     });
 
-    const response = await docClient.send(command);
-    lambda.addToLog({ name: "dynamoResponse", body: response })
+    const responseRates = await docClient.send(commandRates);
+    lambda.addToLog({ name: "dynamoResponseForRates", body: responseRates })
 
-    const rates = JSON.parse(response.Items[0].attributes)
+    const rates = JSON.parse(responseRates.Items[0].attributes)
     const ratesToPullFrom = rates[body.cr]
     const arrayOfRarityRates = Object.keys(ratesToPullFrom)
 
@@ -50,12 +50,45 @@ const run = async (lambda) => {
         isScroll = false
     }
 
+    lambda.addToLog({ name: "dataFromRandomGeneration", body: { 
+        "rarity": randomRarityValue, 
+        isScroll, ratesToPullFrom,
+        randomNumberForScroll, randomNumberForRarity 
+    }})
+
+    const commandItems = new QueryCommand({
+        TableName: "loot_table",
+        KeyConditionExpression: "PK = :items",
+        ExpressionAttributeValues: {
+            ":items": `items`
+        },
+        ConsistentRead: true,
+    });
+    const responseItems = await docClient.send(commandItems);
+    lambda.addToLog({ name: "dynamoResponseForItems", body: responseItems })
+
+    const items = JSON.parse(responseItems.Items[0].attributes)
+    const numberOfItemsInRarity = items.numberOf[randomRarityValue]
+    const randomNumberForItem = Math.floor(Math.random() * numberOfItemsInRarity) + 1
+    lambda.addToLog({ name: "itemsData", body: { items, numberOfItemsInRarity, randomNumberForItem } })
+
+    const commandItem = new QueryCommand({
+        TableName: "loot_table",
+        KeyConditionExpression: "PK = :rarity AND SK = :id",
+        ExpressionAttributeValues: {
+            ":rarity": randomRarityValue,
+            ":id": randomNumberForItem.toString()
+        },
+        ConsistentRead: true,
+    });
+    const responseItem = await docClient.send(commandItem);
+    lambda.addToLog({ name: "dynamoResponseForItem", body: responseItem })
+
+    const item = JSON.parse(responseItem.Items[0].attributes)
+    lambda.addToLog({ name: "itemData", body: { item } })
+
     return lambda.success({ 
-        body: { 
-            "rarity": randomRarityValue, 
-            isScroll, ratesToPullFrom,
-            randomNumberForScroll, randomNumberForRarity 
-        }, 
+        body: item, 
         message: "Success" 
     })
 }
