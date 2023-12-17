@@ -4,6 +4,7 @@ import { getStreamAsArray } from 'get-stream';
 import { v4 as uuidv4 } from 'uuid';
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { BatchWriteCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import util from 'util'
 
 const loadCsv = async (path) => {
     const parseStream = parse({ delimiter: ',', from_line: 2 });
@@ -115,6 +116,138 @@ const uploadToDynamo = async () => {
     }
 }
 
+const uploadRates = async () => {
+    const client = new DynamoDBClient({});
+    const docClient = DynamoDBDocumentClient.from(client);
+    const putRequests = {
+        "loot_table": [
+            {
+                "PutRequest": {
+                    "Item": {
+                        "PK": "rates",
+                        "SK": "74e3e7da-af1d-474a-ad40-7da5f0939922",
+                        "id": 'rates_74e3e7da-af1d-474a-ad40-7da5f0939922',
+                        "type": "rates",
+                        "attributes": JSON.stringify({
+                            "cr0to4": {
+                                "displayName": "CR 0 to 4",
+                                "common": 3200,
+                                "uncommon": (3200)+4800,
+                                "rare": (3200+4800)+2000,
+                                "veryRare": 0,
+                                "legendary": 0,
+                                "artifact": 0,
+                                "spellScrollChance": 1278
+                            },
+                            "cr5to10": {
+                                "displayName": "CR 5 to 10",
+                                "common": 2580,
+                                "uncommon": (2580)+4000,
+                                "rare": (2580+4000)+2236,
+                                "veryRare": (2580+4000+2236)+1184,
+                                "legendary": 0,
+                                "artifact": 0,
+                                "spellScrollChance": 1513
+                            },
+                            "cr11to16": {
+                                "displayName": "CR 11 to 16",
+                                "common": 740,
+                                "uncommon": (740)+1560,
+                                "rare": (740+1560)+3220,
+                                "veryRare": (740+1560+3220)+3400,
+                                "legendary": (740+1560+3220+3400)+1080,
+                                "artifact": 0,
+                                "spellScrollChance": 1612
+                            },
+                            "cr17up": {
+                                "displayName": "CR 17 up",
+                                "common": 0,
+                                "uncommon": 72,
+                                "rare": (72)+1814,
+                                "veryRare": (72+1814)+5134,
+                                "legendary": (72+1814+5134)+2880,
+                                "artifact": (72+1814+5134+2880)+100,
+                                "spellScrollChance": 2267
+                            }
+                        })
+                    }
+                }
+            },
+            {
+                "PutRequest": {
+                    "Item": {
+                        "PK": "campaign#9bb45f68-85c1-4e71-b64f-040712d88488",
+                        "SK": "rates#74e3e7da-af1d-474a-ad40-7da5f0939922",
+                        "id": 'rates_74e3e7da-af1d-474a-ad40-7da5f0939922',
+                        "type": "rates",
+                        "attributes": JSON.stringify({
+                            "cr0to4": {
+                                "displayName": "CR 0 to 4",
+                                "common": 3200,
+                                "uncommon": (3200)+4800,
+                                "rare": (3200+4800)+2000,
+                                "veryRare": 0,
+                                "legendary": 0,
+                                "artifact": 0,
+                                "spellScrollChance": 1278
+                            },
+                            "cr5to10": {
+                                "displayName": "CR 5 to 10",
+                                "common": 2580,
+                                "uncommon": (2580)+4000,
+                                "rare": (2580+4000)+2236,
+                                "veryRare": (2580+4000+2236)+1184,
+                                "legendary": 0,
+                                "artifact": 0,
+                                "spellScrollChance": 1513
+                            },
+                            "cr11to16": {
+                                "displayName": "CR 11 to 16",
+                                "common": 740,
+                                "uncommon": (740)+1560,
+                                "rare": (740+1560)+3220,
+                                "veryRare": (740+1560+3220)+3400,
+                                "legendary": (740+1560+3220+3400)+1080,
+                                "artifact": 0,
+                                "spellScrollChance": 1612
+                            },
+                            "cr17up": {
+                                "displayName": "CR 17 up",
+                                "common": 0,
+                                "uncommon": 72,
+                                "rare": (72)+1814,
+                                "veryRare": (72+1814)+5134,
+                                "legendary": (72+1814+5134)+2880,
+                                "artifact": (72+1814+5134+2880)+100,
+                                "spellScrollChance": 2267
+                            }
+                        })
+                    }
+                }
+            },
+            {
+                "PutRequest": {
+                    "Item": {
+                        "PK": "campaign",
+                        "SK": "9bb45f68-85c1-4e71-b64f-040712d88488",
+                        "id": 'campaign_9bb45f68-85c1-4e71-b64f-040712d88488',
+                        "type": "campaign",
+                        "attributes": JSON.stringify({
+                            name: "The Hiers"
+                        })
+                    }
+                }
+            }
+        ],
+    }
+
+    const command = new BatchWriteCommand({
+        RequestItems: putRequests
+    });
+
+    await docClient.send(command);
+}
+
 const main = async (path, step) => {
     switch (step) {
         case 1:
@@ -135,9 +268,12 @@ const main = async (path, step) => {
         case "generateId":
             console.log(uuidv4())
             break;
+        case "uploadRates":
+            await uploadRates()
+            break
         default:
             break;
     }
 }
 
-main('../csvs/DnD Loot - Sheet1.csv', 5)
+main('../csvs/DnD Loot - Sheet1.csv', "uploadRates")
