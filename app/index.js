@@ -33,7 +33,7 @@ const run = async (lambda) => {
         let item = null
         let itemsGenerated = []
 
-        if (!body.noCursedItems && !body.excludeSources) {
+        if (!body.noCursedItems && !body.excludeSources && !body.adventureSpecificThreshold) {
             item = await getItem({ 
                 lambda, docClient, 
                 randomRarityValue, 
@@ -61,11 +61,13 @@ const run = async (lambda) => {
                     } else {
                         breakWhileLoop = false
                     }
+                } else if (body.adventureSpecificThreshold && item.isAdventureSpecific >= body.adventureSpecificThreshold) {
+                    continue
                 } else {
                     breakWhileLoop = false
                 }
 
-                if (itemsGenerated.length > 50) {
+                if (itemsGenerated.length > 15) {
                     breakWhileLoop = false
                 }
             }
