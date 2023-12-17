@@ -1,0 +1,13 @@
+{
+    "name": "whispertroll-lambda",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "dependencies": {
+        "@aws-sdk/client-dynamodb": "^3.421.0",
+        "@aws-sdk/lib-dynamodb": "^3.421.0",
+        "node-fetch": "^3.3.2",
+        "@carson.key/lambdawrapper": "^0.0.6"
+    }
+}
