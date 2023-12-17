@@ -30,8 +30,48 @@ const run = async (lambda) => {
 
         const { items, numberOfItemsInRarity } = await getItems({ lambda, docClient, randomRarityValue })
 
-        const randomNumberForItem = randomNumber({ maxNumber: numberOfItemsInRarity })
-        const { item } = await getItem({ lambda, docClient, randomRarityValue, randomNumberForItem })
+        let item = null
+        let itemsGenerated = []
+
+        if (!body.noCursedItems && !body.excludeSources) {
+            item = await getItem({ 
+                lambda, docClient, 
+                randomRarityValue, 
+                randomNumberForItem: randomNumber({ maxNumber: numberOfItemsInRarity }) 
+            })
+            item = item.item
+            itemsGenerated.push(item)
+        } else {
+            let breakWhileLoop = true
+
+            while (breakWhileLoop) {
+                item = await getItem({ 
+                    lambda, docClient, 
+                    randomRarityValue, 
+                    randomNumberForItem: randomNumber({ maxNumber: numberOfItemsInRarity }) 
+                })
+                item = item.item
+                itemsGenerated.push(item)
+
+                if (body.noCursedItems && item.isCursed) {
+                    continue
+                } else if (body.excludeSources?.length) {
+                    if (body.excludeSources.includes(item.source)) {
+                        continue
+                    } else {
+                        breakWhileLoop = false
+                    }
+                } else {
+                    breakWhileLoop = false
+                }
+
+                if (itemsGenerated.length > 50) {
+                    breakWhileLoop = false
+                }
+            }
+        }
+
+        lambda.addToLog({ name: "itemGenerationData", body: { itemsGenerated } })
 
         return lambda.success({ 
             body: item, 
