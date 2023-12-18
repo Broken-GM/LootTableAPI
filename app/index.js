@@ -30,21 +30,15 @@ const run = async (lambda) => {
 
         const { items, numberOfItemsInRarity } = await getItems({ lambda, docClient, randomRarityValue })
 
-        let item = null
-        let itemsGenerated = []
+        let itemsReturned = []
+        let arrayOfItemsGenerated = []
+        let numberOfItemsToGenerate = body.numberOfItemsToGenerate ? body.numberOfItemsToGenerate : 1
 
-        if (!body.noCursedItems && !body.excludeSources && !body.adventureSpecificThreshold) {
-            item = await getItem({ 
-                lambda, docClient, 
-                randomRarityValue, 
-                randomNumberForItem: randomNumber({ maxNumber: numberOfItemsInRarity }) 
-            })
-            item = item.item
-            itemsGenerated.push(item)
-        } else {
-            let breakWhileLoop = true
+        for (let i = 0; i < numberOfItemsToGenerate; i++) {
+            let item = null
+            let itemsGenerated = []
 
-            while (breakWhileLoop) {
+            if (!body.noCursedItems && !body.excludeSources && !body.adventureSpecificThreshold) {
                 item = await getItem({ 
                     lambda, docClient, 
                     randomRarityValue, 
@@ -52,31 +46,46 @@ const run = async (lambda) => {
                 })
                 item = item.item
                 itemsGenerated.push(item)
+            } else {
+                let breakWhileLoop = true
 
-                if (body.noCursedItems && item.isCursed) {
-                    continue
-                } else if (body.excludeSources?.length) {
-                    if (body.excludeSources.includes(item.source)) {
+                while (breakWhileLoop) {
+                    item = await getItem({ 
+                        lambda, docClient, 
+                        randomRarityValue, 
+                        randomNumberForItem: randomNumber({ maxNumber: numberOfItemsInRarity }) 
+                    })
+                    item = item.item
+                    itemsGenerated.push(item)
+
+                    if (body.noCursedItems && item.isCursed) {
+                        continue
+                    } else if (body.excludeSources?.length) {
+                        if (body.excludeSources.includes(item.source)) {
+                            continue
+                        } else {
+                            breakWhileLoop = false
+                        }
+                    } else if (body.adventureSpecificThreshold && item.isAdventureSpecific >= body.adventureSpecificThreshold) {
                         continue
                     } else {
                         breakWhileLoop = false
                     }
-                } else if (body.adventureSpecificThreshold && item.isAdventureSpecific >= body.adventureSpecificThreshold) {
-                    continue
-                } else {
-                    breakWhileLoop = false
-                }
 
-                if (itemsGenerated.length > 15) {
-                    breakWhileLoop = false
+                    if (itemsGenerated.length > 15) {
+                        breakWhileLoop = false
+                    }
                 }
             }
+
+            itemsReturned.push(item)
+            arrayOfItemsGenerated.push(itemsGenerated)
         }
 
-        lambda.addToLog({ name: "itemGenerationData", body: { itemsGenerated } })
+        lambda.addToLog({ name: "itemGenerationData", body: { itemsReturned, arrayOfItemsGenerated } })
 
         return lambda.success({ 
-            body: item, 
+            body: { items: itemsReturned }, 
             message: "Success" 
         })
     }
