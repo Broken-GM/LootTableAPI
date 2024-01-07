@@ -86,7 +86,16 @@ const createDynamoObjects = async () => {
                 "SK": "dc9b4ff8-e370-4d40-bf05-3ee9390ec256",
                 "id": 'items_dc9b4ff8-e370-4d40-bf05-3ee9390ec256',
                 "type": "items",
-                "attributes": JSON.stringify({ numberOf: numberOfItems })
+                "attributes": JSON.stringify({ 
+                    numberOf: numberOfItems, 
+                    numberOfScrolls: {
+                        "common": 2,
+                        "uncommon": 2,
+                        "rare": 2,
+                        "veryRare": 3,
+                        "legendary": 1
+                    }
+                })
             }
         }
     })
@@ -125,8 +134,208 @@ const createDynamoObjects = async () => {
     });
 }
 
-const chunkData = async () => {
+const createSpellScrollObjects = async () => {
     const data = fs.readFileSync(`../csvs/arrayOfPutObjects.json`)
+    let dataJson = JSON.parse(data).data
+
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#common",
+                "SK": "1",
+                "id": 'spell_1',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "Cantrip",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "common",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#common",
+                "SK": "2",
+                "id": 'spell_2',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "1st",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "common",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#uncommon",
+                "SK": "1",
+                "id": 'spell_3',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "2nd",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "uncommon",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#uncommon",
+                "SK": "2",
+                "id": 'spell_4',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "3rd",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "uncommon",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#rare",
+                "SK": "1",
+                "id": 'spell_5',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "4th",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "rare",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#rare",
+                "SK": "2",
+                "id": 'spell_6',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "5th",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "rare",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#veryRare",
+                "SK": "1",
+                "id": 'spell_7',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "6th",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "veryRare",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#veryRare",
+                "SK": "2",
+                "id": 'spell_8',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "7th",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "veryRare",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#veryRare",
+                "SK": "3",
+                "id": 'spell_9',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "8th",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "veryRare",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+    dataJson.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "spell#legendary",
+                "SK": "1",
+                "id": 'spell_10',
+                "type": "spell",
+                "attributes": JSON.stringify({
+                    name: "9th",
+                    link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
+                    rarity: "legendary",
+                    isCursed: false,
+                    type: "scroll",
+                    source: "Basic Rules",
+                    isAdventureSpecific: 0
+                })
+            }
+        }
+    })
+
+    fs.writeFile(`../csvs/arrayOfPutObjectsWithSpells.json`, JSON.stringify({ data: dataJson }), (error) => {
+        if (error) throw error;
+    });
+}
+
+const chunkData = async () => {
+    const data = fs.readFileSync(`../csvs/arrayOfPutObjectsWithSpells.json`)
     let dataJson = JSON.parse(data).data
 
     let chunkedEntries = []
@@ -305,9 +514,12 @@ const main = async (path, step) => {
             await createDynamoObjects()
             break;
         case 4:
-            await chunkData()
+            await createSpellScrollObjects()
             break;
         case 5:
+            await chunkData()
+            break;
+        case 6:
             await uploadToDynamo()
             break;
         case "generateId":
@@ -321,4 +533,4 @@ const main = async (path, step) => {
     }
 }
 
-main('../csvs/items.csv', 3)
+main('../csvs/items.csv', 6)
