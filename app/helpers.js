@@ -61,7 +61,7 @@ export const determineRarity = async ({
     return { randomRarityValue, isScroll, randomNumberForScroll, randomNumberForRarity }
 }
 
-export const getItems = async ({ lambda, randomRarityValue, docClient }) => {
+export const getItems = async ({ lambda, docClient }) => {
     const commandItems = new QueryCommand({
         TableName: "loot_table",
         KeyConditionExpression: "PK = :items",
@@ -74,10 +74,9 @@ export const getItems = async ({ lambda, randomRarityValue, docClient }) => {
     lambda.addToLog({ name: "dynamoResponseForItems", body: responseItems })
 
     const items = JSON.parse(responseItems.Items[0].attributes)
-    const numberOfItemsInRarity = items.numberOf[randomRarityValue]
-    lambda.addToLog({ name: "itemsData", body: { items, numberOfItemsInRarity } })
+    lambda.addToLog({ name: "itemsData", body: { items } })
 
-    return { items, numberOfItemsInRarity }
+    return { items }
 }
 
 export const getItem = async ({ lambda, docClient, randomRarityValue, randomNumberForItem }) => {

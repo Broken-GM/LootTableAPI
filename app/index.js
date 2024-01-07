@@ -19,22 +19,23 @@ const run = async (lambda) => {
     } else {
         const { rates, ratesToPullFrom, arrayOfRarityRates } = await getRates({ lambda, docClient, cr, campaignId })
 
-        const randomNumberForScroll = randomNumber({ maxNumber: 10000 })
-        const randomNumberForRarity = randomNumber({ maxNumber: 10000 })
-
-        const { randomRarityValue, isScroll } = await determineRarity({ 
-            lambda, arrayOfRarityRates, 
-            ratesToPullFrom, randomNumberForScroll, 
-            randomNumberForRarity
-        })
-
-        const { items, numberOfItemsInRarity } = await getItems({ lambda, docClient, randomRarityValue })
+        const { items } = await getItems({ lambda, docClient })
 
         let itemsReturned = []
         let arrayOfItemsGenerated = []
         let numberOfItemsToGenerate = body.numberOfItemsToGenerate ? body.numberOfItemsToGenerate : 1
 
         for (let i = 0; i < numberOfItemsToGenerate; i++) {
+            const randomNumberForScroll = randomNumber({ maxNumber: 10000 })
+            const randomNumberForRarity = randomNumber({ maxNumber: 10000 })
+
+            const { randomRarityValue, isScroll } = await determineRarity({ 
+                lambda, arrayOfRarityRates, 
+                ratesToPullFrom, randomNumberForScroll, 
+                randomNumberForRarity
+            })
+            const numberOfItemsInRarity = items.numberOf[randomRarityValue]
+
             let item = null
             let itemsGenerated = []
 
