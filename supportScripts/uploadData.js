@@ -165,7 +165,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_2',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "1st",
+                    name: "1st Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "common",
                     isCursed: false,
@@ -184,7 +184,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_3',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "2nd",
+                    name: "2nd Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "uncommon",
                     isCursed: false,
@@ -203,7 +203,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_4',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "3rd",
+                    name: "3rd Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "uncommon",
                     isCursed: false,
@@ -222,7 +222,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_5',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "4th",
+                    name: "4th Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "rare",
                     isCursed: false,
@@ -241,7 +241,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_6',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "5th",
+                    name: "5th Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "rare",
                     isCursed: false,
@@ -260,7 +260,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_7',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "6th",
+                    name: "6th Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "veryRare",
                     isCursed: false,
@@ -279,7 +279,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_8',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "7th",
+                    name: "7th Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "veryRare",
                     isCursed: false,
@@ -298,7 +298,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_9',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "8th",
+                    name: "8th Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "veryRare",
                     isCursed: false,
@@ -317,7 +317,7 @@ const createSpellScrollObjects = async () => {
                 "id": 'spell_10',
                 "type": "spell",
                 "attributes": JSON.stringify({
-                    name: "9th",
+                    name: "9th Level Spell Scroll",
                     link: "https://www.dndbeyond.com/magic-items/5418-spell-scroll",
                     rarity: "legendary",
                     isCursed: false,
