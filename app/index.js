@@ -34,12 +34,25 @@ const run = async (lambda) => {
                 ratesToPullFrom, randomNumberForScroll, 
                 randomNumberForRarity
             })
-            const numberOfItemsInRarity = items.numberOf[randomRarityValue]
+
+            let numberOfItemsInRarity = items.numberOf[randomRarityValue]
+
+            if (isScroll) {
+                numberOfItemsInRarity = items.numberOfScrolls[randomRarityValue]
+            }
 
             let item = null
             let itemsGenerated = []
 
-            if (!body.noCursedItems && !body.excludeSources && !body.adventureSpecificThreshold) {
+            if (isScroll) {
+                item = await getItem({ 
+                    lambda, docClient, 
+                    randomRarityValue: `spell#${randomRarityValue}`, 
+                    randomNumberForItem: randomNumber({ maxNumber: numberOfItemsInRarity }) 
+                })
+                item = item.item
+                itemsGenerated.push(item)
+            } else if (!body.noCursedItems && !body.excludeSources && !body.adventureSpecificThreshold) {
                 item = await getItem({ 
                     lambda, docClient, 
                     randomRarityValue, 
