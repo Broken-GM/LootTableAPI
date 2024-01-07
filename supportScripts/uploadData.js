@@ -42,6 +42,10 @@ const createArrayOfItemObjects = async () => {
 const createDynamoObjects = async () => {
     let arrayOfPutObjects = []
     let numberOfItems = {}
+    let numberOfItemsBySource = {}
+    let numberOfItemsBySourceInt = {}
+    let numberOfItemsInt = 0
+    let sources = {}
     const data = fs.readFileSync(`../csvs/arrayOfItemObjects.json`)
     let itemObjects = JSON.parse(data).data
 
@@ -61,6 +65,18 @@ const createDynamoObjects = async () => {
         })
 
         numberOfItems[itemObjects[i].rarity] = id
+        numberOfItemsInt += 1
+        sources[itemObjects[i].source] = true
+
+        if (!numberOfItemsBySource[itemObjects[i].source]) {
+            numberOfItemsBySource[itemObjects[i].source] = {}
+            numberOfItemsBySourceInt[itemObjects[i].source] = 0
+        }
+        if (!numberOfItemsBySource[itemObjects[i].source][itemObjects[i].rarity]) {
+            numberOfItemsBySource[itemObjects[i].source][itemObjects[i].rarity] = 0
+        }
+        numberOfItemsBySource[itemObjects[i].source][itemObjects[i].rarity] += 1
+        numberOfItemsBySourceInt[itemObjects[i].source] += 1
     }
 
     arrayOfPutObjects.push({
@@ -71,6 +87,35 @@ const createDynamoObjects = async () => {
                 "id": 'items_dc9b4ff8-e370-4d40-bf05-3ee9390ec256',
                 "type": "items",
                 "attributes": JSON.stringify({ numberOf: numberOfItems })
+            }
+        }
+    })
+    arrayOfPutObjects.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "metaData",
+                "SK": "31a6974e-00fa-44a1-b1ff-c3298be4ed7f",
+                "id": 'metaData_31a6974e-00fa-44a1-b1ff-c3298be4ed7f',
+                "type": "metaData",
+                "attributes": JSON.stringify({ 
+                    numberOfItemsByRarity: numberOfItems, 
+                    numberOfItems: numberOfItemsInt,
+                    numberOfItemsBySourceAndRarity: numberOfItemsBySource,
+                    numberOfItemsBySource: numberOfItemsBySourceInt
+                })
+            }
+        }
+    })
+    arrayOfPutObjects.push({
+        "PutRequest": {
+            "Item": {
+                "PK": "sources",
+                "SK": "1ebd5ec0-9a4c-40b0-afd6-fe104e75192a",
+                "id": 'sources_1ebd5ec0-9a4c-40b0-afd6-fe104e75192a',
+                "type": "sources",
+                "attributes": JSON.stringify({ 
+                    sources: Object.keys(sources)
+                })
             }
         }
     })
@@ -276,4 +321,4 @@ const main = async (path, step) => {
     }
 }
 
-main('../csvs/DnD Loot - Sheet1.csv', "uploadRates")
+main('../csvs/items.csv', 3)
