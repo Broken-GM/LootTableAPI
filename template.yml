@@ -72,6 +72,39 @@ Resources:
         - AttributeName: SK
           KeyType: RANGE
 
+  LootTableApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LootTableApiRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LootTableApiCloudwatchLogsPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:PutResourcePolicy
+                  - logs:DeleteResourcePolicy
+                  - logs:FilterLogEvents
+                  - logs:DescribeLogStreams
+                  - logs:DescribeLogStreams
+                  - logs:GetLogEvents
+                Resource:
+                  - "*"
+
   LootTableApiGateway:
     Type: AWS::Serverless::Api
     Properties:
