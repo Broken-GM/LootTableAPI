@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - development
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy-prod:
     runs-on: ubuntu-latest
@@ -16,10 +21,10 @@ jobs:
       - name: Setup Sam
         uses: aws-actions/setup-sam@v2
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         with:
-          aws-access-key-id: ${{ secrets.DEV_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.DEV_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ secrets.DEV_ACCOUNT_ID }}:role/LootTable-Actions
+          role-session-name: brokengmdevloottable
           aws-region: us-west-2
       - name: Sam Build
         run: sam build --use-container

@@ -1,0 +1,18 @@
+{
+  "name": "voices",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.421.0",
+    "@aws-sdk/lib-dynamodb": "^3.421.0",
+    "crypto-js": "^4.2.0",
+    "csv": "^6.3.6",
+    "get-stream": "^8.0.1",
+    "lodash": "^4.17.21",
+    "lodash.combinations": "^18.11.1",
+    "upath": "^2.0.1",
+    "uuid": "^9.0.1"
+  }
+}

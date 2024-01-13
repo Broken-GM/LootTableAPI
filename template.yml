@@ -7,6 +7,31 @@ Globals:
     MemorySize: 512
 
 Resources:
+  LootTableRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LootTableRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LootTableDynamo
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:*
+                  - kms:*
+                Resource:
+                  - "*"
   LootTableDbKey:
     Type: AWS::KMS::Key
     Properties:
@@ -46,3 +71,40 @@ Resources:
           KeyType: HASH
         - AttributeName: SK
           KeyType: RANGE
+
+  LootTableApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: LootTableApiGateway
+      StageName: prod
+      Auth:
+        AddDefaultAuthorizerToCorsPreflight: false
+        UsagePlan:
+            CreateUsagePlan: PER_API
+            UsagePlanName: LootTableApiUsagePlan
+            Description: LootTableAPI Usage Plan
+      Cors:
+        AllowMethods: "'POST, OPTIONS, PUT, GET'"
+        AllowHeaders: "'Content-Type, X-Api-Key, Authorization'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+
+  LootTableApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 60
+      CodeUri: app
+      Handler: index.lambdaHandler
+      Runtime: nodejs16.x
+      Role: !GetAtt LootTableApiRole.Arn
+      Architectures:
+        - x86_64
+      Events:
+        Post:
+          Type: Api 
+          Properties:
+            Path: /
+            Method: POST
+            RestApiId: !Ref LootTableApiGateway
+            Auth:
+              ApiKeyRequired: true  
