@@ -79,12 +79,12 @@ export const getItems = async ({ lambda, docClient }) => {
     return { items }
 }
 
-export const getItem = async ({ lambda, docClient, randomRarityValue, randomNumberForItem }) => {
+export const getItem = async ({ lambda, docClient, hash, randomNumberForItem }) => {
     const commandItem = new QueryCommand({
         TableName: "loot_table",
-        KeyConditionExpression: "PK = :rarity AND SK = :id",
+        KeyConditionExpression: "PK = :hash AND SK = :id",
         ExpressionAttributeValues: {
-            ":rarity": randomRarityValue,
+            ":hash": hash,
             ":id": randomNumberForItem.toString()
         },
         ConsistentRead: true,
