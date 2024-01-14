@@ -35,7 +35,65 @@ const run = async (lambda) => {
                 randomNumberForRarity
             })
 
-            
+            let numberOfItemsInRarity = items.numberOf[randomRarityValue]
+
+            if (isScroll) {
+                numberOfItemsInRarity = items.numberOfScrolls[randomRarityValue]
+            }
+
+            let item = null
+            let itemsGenerated = []
+
+            if (isScroll) {
+                item = await getItem({ 
+                    lambda, docClient, 
+                    randomRarityValue: `spell#${randomRarityValue}`, 
+                    randomNumberForItem: randomNumber({ maxNumber: numberOfItemsInRarity }) 
+                })
+                item = item.item
+                itemsGenerated.push(item)
+            } else if (!body.noCursedItems && !body.excludeSources && !body.adventureSpecificThreshold) {
+                item = await getItem({ 
+                    lambda, docClient, 
+                    randomRarityValue, 
+                    randomNumberForItem: randomNumber({ maxNumber: numberOfItemsInRarity }) 
+                })
+                item = item.item
+                itemsGenerated.push(item)
+            } else {
+                let breakWhileLoop = true
+
+                while (breakWhileLoop) {
+                    item = await getItem({ 
+                        lambda, docClient, 
+                        randomRarityValue, 
+                        randomNumberForItem: randomNumber({ maxNumber: numberOfItemsInRarity }) 
+                    })
+                    item = item.item
+                    itemsGenerated.push(item)
+
+                    if (body.noCursedItems && item.isCursed) {
+                        continue
+                    } else if (body.excludeSources?.length) {
+                        if (body.excludeSources.includes(item.source)) {
+                            continue
+                        } else {
+                            breakWhileLoop = false
+                        }
+                    } else if (body.adventureSpecificThreshold && item.isAdventureSpecific >= body.adventureSpecificThreshold) {
+                        continue
+                    } else {
+                        breakWhileLoop = false
+                    }
+
+                    if (itemsGenerated.length > 15) {
+                        breakWhileLoop = false
+                    }
+                }
+            }
+
+            itemsReturned.push(item)
+            arrayOfItemsGenerated.push(itemsGenerated)
         }
 
         lambda.addToLog({ name: "itemGenerationData", body: { itemsReturned, arrayOfItemsGenerated } })

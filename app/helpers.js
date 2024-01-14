@@ -61,23 +61,6 @@ export const determineRarity = async ({
     return { randomRarityValue, isScroll, randomNumberForScroll, randomNumberForRarity }
 }
 
-export const getPossibilities = async ({ lambda, docClient }) => {
-    const commandPossibilities = new QueryCommand({
-        TableName: "loot_table",
-        KeyConditionExpression: "PK = :possibilities",
-        ExpressionAttributeValues: {
-            ":possibilities": `possibilities`
-        },
-        ConsistentRead: true,
-    });
-    const responseItems = await docClient.send(commandPossibilities);
-    lambda.addToLog({ name: "dynamoResponseForPossibilities", body: responseItems })
-
-    const possibilities = JSON.parse(responseItems.Items[0].attributes)
-    lambda.addToLog({ name: "possibilitiesData", body: { possibilities } })
-
-    return { possibilities }
-}
 export const getItems = async ({ lambda, docClient }) => {
     const commandItems = new QueryCommand({
         TableName: "loot_table",
@@ -96,21 +79,21 @@ export const getItems = async ({ lambda, docClient }) => {
     return { items }
 }
 
-export const getItem = async ({ i, lambda, docClient, hash, randomNumberForItem }) => {
+export const getItem = async ({ lambda, docClient, randomRarityValue, randomNumberForItem }) => {
     const commandItem = new QueryCommand({
         TableName: "loot_table",
-        KeyConditionExpression: "PK = :hash AND SK = :id",
+        KeyConditionExpression: "PK = :rarity AND SK = :id",
         ExpressionAttributeValues: {
-            ":hash": hash,
+            ":rarity": randomRarityValue,
             ":id": randomNumberForItem.toString()
         },
         ConsistentRead: true,
     });
     const responseItem = await docClient.send(commandItem);
-    lambda.addToLog({ name: `dynamoResponseForItem-${i}`, body: responseItem })
+    lambda.addToLog({ name: "dynamoResponseForItem", body: responseItem })
 
     const item = JSON.parse(responseItem.Items[0].attributes)
-    lambda.addToLog({ name: `itemData-${i}`, body: { item } })
+    lambda.addToLog({ name: "itemData", body: { item } })
 
     return { item }
 }
