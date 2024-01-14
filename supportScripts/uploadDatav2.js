@@ -122,6 +122,8 @@ const createDynamoObjects = async () => {
         })
     }
 
+    delete numberOfItemsBySource["Spell Scroll"]
+
     arrayOfPutObjects.push({
         "PutRequest": {
             "Item": {
@@ -355,4 +357,4 @@ const main = async (path, step) => {
     }
 }
 
-main(upath.normalize('./csvs/DnDLoot-items.csv'), 1)
+main(upath.normalize('./csvs/DnDLoot-items.csv'), 5)
