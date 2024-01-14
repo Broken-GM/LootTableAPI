@@ -79,7 +79,7 @@ export const getPossibilities = async ({ lambda, docClient }) => {
     return { possibilities }
 }
 
-export const getItem = async ({ lambda, docClient, hash, randomNumberForItem }) => {
+export const getItem = async ({ i, lambda, docClient, hash, randomNumberForItem }) => {
     const commandItem = new QueryCommand({
         TableName: "loot_table",
         KeyConditionExpression: "PK = :hash AND SK = :id",
@@ -90,10 +90,10 @@ export const getItem = async ({ lambda, docClient, hash, randomNumberForItem }) 
         ConsistentRead: true,
     });
     const responseItem = await docClient.send(commandItem);
-    lambda.addToLog({ name: "dynamoResponseForItem", body: responseItem })
+    lambda.addToLog({ name: `dynamoResponseForItem-${i}`, body: responseItem })
 
     const item = JSON.parse(responseItem.Items[0].attributes)
-    lambda.addToLog({ name: "itemData", body: { item } })
+    lambda.addToLog({ name: `itemData-${i}`, body: { item } })
 
     return { item }
 }
