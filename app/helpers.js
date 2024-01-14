@@ -62,7 +62,7 @@ export const determineRarity = async ({
 }
 
 export const getPossibilities = async ({ lambda, docClient }) => {
-    const commandItems = new QueryCommand({
+    const commandPossibilities = new QueryCommand({
         TableName: "loot_table",
         KeyConditionExpression: "PK = :possibilities",
         ExpressionAttributeValues: {
@@ -70,11 +70,11 @@ export const getPossibilities = async ({ lambda, docClient }) => {
         },
         ConsistentRead: true,
     });
-    const responseItems = await docClient.send(commandItems);
+    const responseItems = await docClient.send(commandPossibilities);
     lambda.addToLog({ name: "dynamoResponseForPossibilities", body: responseItems })
 
     const possibilities = JSON.parse(responseItems.Items[0].attributes)
-    lambda.addToLog({ name: "possibilitiesData", body: { items } })
+    lambda.addToLog({ name: "possibilitiesData", body: { possibilities } })
 
     return { possibilities }
 }
