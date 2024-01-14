@@ -2,7 +2,7 @@ name: deploy-prod
 on:
   push:
     branches:
-      - development
+      - production
 
 permissions:
   id-token: write
@@ -17,7 +17,7 @@ jobs:
       - name: Installing Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       - name: Setup Sam
         uses: aws-actions/setup-sam@v2
       - name: Configure AWS Credentials

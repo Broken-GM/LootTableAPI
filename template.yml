@@ -114,7 +114,7 @@ Resources:
       Timeout: 60
       CodeUri: app
       Handler: index.lambdaHandler
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Role: !GetAtt LootTableApiRole.Arn
       Architectures:
         - x86_64
