@@ -78,6 +78,23 @@ export const getPossibilities = async ({ lambda, docClient }) => {
 
     return { possibilities }
 }
+export const getItems = async ({ lambda, docClient }) => {
+    const commandItems = new QueryCommand({
+        TableName: "loot_table",
+        KeyConditionExpression: "PK = :items",
+        ExpressionAttributeValues: {
+            ":items": `items`
+        },
+        ConsistentRead: true,
+    });
+    const responseItems = await docClient.send(commandItems);
+    lambda.addToLog({ name: "dynamoResponseForItems", body: responseItems })
+
+    const items = JSON.parse(responseItems.Items[0].attributes)
+    lambda.addToLog({ name: "itemsData", body: { items } })
+
+    return { items }
+}
 
 export const getItem = async ({ i, lambda, docClient, hash, randomNumberForItem }) => {
     const commandItem = new QueryCommand({
