@@ -46,3 +46,84 @@ Resources:
           KeyType: HASH
         - AttributeName: SK
           KeyType: RANGE
+
+  LootTableApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LootTableApiRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+                - apigateway.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: LootTableApiCloudwatchLogsPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - logs:PutResourcePolicy
+                  - logs:DeleteResourcePolicy
+                  - logs:FilterLogEvents
+                  - logs:DescribeLogStreams
+                  - logs:DescribeLogStreams
+                  - logs:GetLogEvents
+                Resource:
+                  - "*"
+        - PolicyName: LootTableDynamo
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:*
+                  - kms:*
+                Resource:
+                  - !GetAtt LootTableDbKey.Arn
+                  - !GetAtt LootTableTable.Arn
+
+  LootTableApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: LootTableApiGateway
+      StageName: prod
+      Auth:
+        AddDefaultAuthorizerToCorsPreflight: false
+        UsagePlan:
+            CreateUsagePlan: PER_API
+            UsagePlanName: LootTableApiUsagePlan
+            Description: LootTableAPI Usage Plan
+      Cors:
+        AllowMethods: "'POST, OPTIONS, PUT, GET'"
+        AllowHeaders: "'Content-Type, X-Api-Key, Authorization'"
+        AllowOrigin: "'*'"
+        MaxAge: "'600'"
+
+  LootTableApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Timeout: 60
+      CodeUri: app
+      Handler: index.lambdaHandler
+      Runtime: nodejs16.x
+      Role: !GetAtt LootTableApiRole.Arn
+      Architectures:
+        - x86_64
+      Events:
+        Post:
+          Type: Api 
+          Properties:
+            Path: /
+            Method: POST
+            RestApiId: !Ref LootTableApiGateway
+            Auth:
+              ApiKeyRequired: true  
