@@ -7,31 +7,6 @@ Globals:
     MemorySize: 512
 
 Resources:
-  LootTableRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: LootTableRole
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - lambda.amazonaws.com
-                - apigateway.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Policies:
-        - PolicyName: LootTableDynamo
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - dynamodb:*
-                  - kms:*
-                Resource:
-                  - "*"
   LootTableDbKey:
     Type: AWS::KMS::Key
     Properties:
@@ -104,6 +79,17 @@ Resources:
                   - logs:GetLogEvents
                 Resource:
                   - "*"
+        - PolicyName: LootTableDynamo
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:*
+                  - kms:*
+                Resource:
+                  - !GetAtt LootTableDbKey.Arn
+                  - !GetAtt LootTableTable.Arn
 
   LootTableApiGateway:
     Type: AWS::Serverless::Api
