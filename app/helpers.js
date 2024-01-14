@@ -61,22 +61,22 @@ export const determineRarity = async ({
     return { randomRarityValue, isScroll, randomNumberForScroll, randomNumberForRarity }
 }
 
-export const getItems = async ({ lambda, docClient }) => {
+export const getPossibilities = async ({ lambda, docClient }) => {
     const commandItems = new QueryCommand({
         TableName: "loot_table",
-        KeyConditionExpression: "PK = :items",
+        KeyConditionExpression: "PK = :possibilities",
         ExpressionAttributeValues: {
-            ":items": `items`
+            ":possibilities": `possibilities`
         },
         ConsistentRead: true,
     });
     const responseItems = await docClient.send(commandItems);
-    lambda.addToLog({ name: "dynamoResponseForItems", body: responseItems })
+    lambda.addToLog({ name: "dynamoResponseForPossibilities", body: responseItems })
 
-    const items = JSON.parse(responseItems.Items[0].attributes)
-    lambda.addToLog({ name: "itemsData", body: { items } })
+    const possibilities = JSON.parse(responseItems.Items[0].attributes)
+    lambda.addToLog({ name: "possibilitiesData", body: { items } })
 
-    return { items }
+    return { possibilities }
 }
 
 export const getItem = async ({ lambda, docClient, hash, randomNumberForItem }) => {
